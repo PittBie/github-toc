@@ -3,7 +3,8 @@ main.js
 *.js.map
 .idea/
 .vscode/
-.claude/
+.claude/settings.local.json
+.claude/memory/
 data.json
 .DS_Store
 Thumbs.db
