@@ -1,7 +1,7 @@
 {
   "id": "github-wiki-toc",
   "name": "GitHub Wiki TOC Generator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "minAppVersion": "0.15.0",
   "description": "Generates a Table of Contents for GitHub wiki-style vaults and injects GitHub Wiki URLs into note frontmatter for easy sharing.",
   "author": "Pitt Biebach",
