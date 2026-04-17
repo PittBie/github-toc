@@ -45,58 +45,35 @@ export class TocSettingTab extends PluginSettingTab {
 
         containerEl.createEl("h2", { text: "GitHub Wiki TOC Generator" });
 
-        // ── How to use ─────────────────────────────────────────────────────────
-        const howTo = containerEl.createEl("div");
-        howTo.style.cssText =
-            "border-left: 3px solid var(--interactive-accent); " +
-            "padding: 0.6em 1em; margin-bottom: 1.5em; " +
-            "background: var(--background-secondary);";
+        // ── TOC Generation ─────────────────────────────────────────────────────
+        new Setting(containerEl)
+            .setName("TOC target files")
+            .setDesc(
+                "Vault-relative paths to the files where the TOC should be written, one per line. " +
+                "If a target is inside a subfolder (e.g. docs/_Sidebar.md), only that subfolder " +
+                "and its descendants are included."
+            )
+            .addTextArea((text) => {
+                text.inputEl.rows = 4;
+                text.inputEl.style.width = "100%";
+                text
+                    .setPlaceholder("_Sidebar.md\ndocs/_Sidebar.md")
+                    .setValue(this.plugin.settings.tocFiles)
+                    .onChange(async (value) => {
+                        this.plugin.settings.tocFiles = value;
+                        await this.plugin.saveSettings();
+                    });
+            });
 
-        howTo.createEl("p", {
-            text: "How to generate the TOC:",
-        }).style.cssText = "font-weight:bold; margin:0 0 0.4em 0;";
-
-        const steps = howTo.createEl("ol");
-        steps.style.cssText = "margin:0; padding-left:1.4em;";
-        for (const step of [
-            'Open the command palette (Ctrl/Cmd + P) and run "Generate Table of Contents" — ' +
-                "or click the list icon in the left ribbon.",
-            "The plugin writes the TOC into each file listed below, overwriting the entire file on every run.",
-            "Configure the target file paths, heading depth, and ignore patterns in the sections below.",
-        ]) {
-            steps.createEl("li", { text: step }).style.cssText = "margin-bottom:0.3em;";
-        }
-
-        // ── TOC Target Files ───────────────────────────────────────────────────
-        containerEl.createEl("h3", { text: "TOC target files" });
-        containerEl.createEl("p", {
-            text:
-                "Vault-relative paths to the files where the TOC should be written. " +
-                "One path per line. If the file lives in a subfolder, only that subfolder " +
-                "and its descendants are included in the TOC.",
-        });
-
-        const tocArea = containerEl.createEl("textarea");
-        tocArea.value = this.plugin.settings.tocFiles;
-        tocArea.rows = 4;
-        tocArea.placeholder = "_Sidebar.md\ndocs/_Sidebar.md";
-        tocArea.style.cssText =
-            "width:100%; font-family:var(--font-monospace); resize:vertical; margin-bottom:1em;";
-        tocArea.addEventListener("blur", async () => {
-            this.plugin.settings.tocFiles = tocArea.value;
-            await this.plugin.saveSettings();
-        });
-
-        // ── Heading Depth ──────────────────────────────────────────────────────
         new Setting(containerEl)
             .setName("Heading depth")
             .setDesc(
                 'Include headings from each file in the TOC. Leave blank to skip headings. ' +
-                'Type "#" to include H1, "##" for H1 and H2, "###" for up to H3, etc.'
+                'Use "#" for H1 only, "##" for H1 and H2, "###" for up to H3, etc.'
             )
             .addText((text) =>
                 text
-                    .setPlaceholder('e.g.  ##  — or leave blank')
+                    .setPlaceholder("e.g. ##")
                     .setValue(this.plugin.settings.headingDepth)
                     .onChange(async (value) => {
                         this.plugin.settings.headingDepth = value.trim();
@@ -104,13 +81,11 @@ export class TocSettingTab extends PluginSettingTab {
                     })
             );
 
-        // ── Ignore Folder Notes ────────────────────────────────────────────────
         new Setting(containerEl)
             .setName("Ignore folder notes")
             .setDesc(
-                "When enabled, files whose name matches their parent folder (folder notes) are " +
-                "excluded from the TOC entirely. The folder still appears as a plain bold entry, " +
-                "but without a wikilink."
+                "When enabled, files whose name matches their parent folder are excluded from the TOC. " +
+                "The folder still appears as a plain bold entry without a link."
             )
             .addToggle((toggle) =>
                 toggle
@@ -121,50 +96,35 @@ export class TocSettingTab extends PluginSettingTab {
                     })
             );
 
-        // ── Ignore Patterns ────────────────────────────────────────────────────
-        containerEl.createEl("h3", { text: "Ignore patterns" });
-        containerEl.createEl("p", {
-            text:
-                "Gitignore-style patterns for files and folders to exclude from the TOC. " +
-                "One pattern per line. Lines starting with # are comments.",
-        });
-
-        const exampleList = containerEl.createEl("ul");
-        for (const example of [
-            "/images  — exclude the top-level images folder",
-            "images/  — exclude any folder named images at any depth",
-            "*.draft.md  — exclude files matching this glob",
-            "!important.md  — un-ignore a specific file (negation)",
-        ]) {
-            exampleList.createEl("li", { text: example });
-        }
-        exampleList.style.cssText =
-            "font-family:var(--font-monospace); font-size:0.85em; margin-bottom:0.5em;";
-
-        const ignoreArea = containerEl.createEl("textarea");
-        ignoreArea.value = this.plugin.settings.ignorePatterns;
-        ignoreArea.rows = 8;
-        ignoreArea.placeholder = "/images\n*.draft.md\nprivate/";
-        ignoreArea.style.cssText =
-            "width:100%; font-family:var(--font-monospace); resize:vertical;";
-        ignoreArea.addEventListener("blur", async () => {
-            this.plugin.settings.ignorePatterns = ignoreArea.value;
-            await this.plugin.saveSettings();
-        });
+        new Setting(containerEl)
+            .setName("Ignore patterns")
+            .setDesc(
+                "Gitignore-style patterns to exclude files and folders, one per line. " +
+                "Lines starting with # are comments. " +
+                "Examples: /images (root folder only), images/ (any depth), " +
+                "*.draft.md (glob), !important.md (negate a pattern)."
+            )
+            .addTextArea((text) => {
+                text.inputEl.rows = 6;
+                text.inputEl.style.width = "100%";
+                text
+                    .setPlaceholder("/images\n*.draft.md\nprivate/")
+                    .setValue(this.plugin.settings.ignorePatterns)
+                    .onChange(async (value) => {
+                        this.plugin.settings.ignorePatterns = value;
+                        await this.plugin.saveSettings();
+                    });
+            });
 
         // ── GitHub Wiki URLs ───────────────────────────────────────────────────
         containerEl.createEl("h3", { text: "GitHub Wiki URLs" });
-        containerEl.createEl("p", {
-            text:
-                "When enabled, a wiki_url property is written to the frontmatter of every note " +
-                "(except TOC files and ignored files). The URL is derived from the base URL below " +
-                "plus the note's filename. URLs are updated automatically whenever a file is " +
-                "renamed or created, and also when the TOC is generated.",
-        });
 
         new Setting(containerEl)
             .setName("Enable Wiki URL injection")
-            .setDesc("Write a wiki_url frontmatter property to each note.")
+            .setDesc(
+                "Write a wiki_url frontmatter property to each note with its GitHub Wiki page URL. " +
+                "URLs are updated automatically when a file is renamed or created, and on every TOC run."
+            )
             .addToggle((toggle) =>
                 toggle
                     .setValue(this.plugin.settings.enableWikiUrls)

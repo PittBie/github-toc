@@ -13,11 +13,17 @@ export class WikiUrlGenerator {
 
     /**
      * Write/update the wiki_url frontmatter key in a single file.
-     * Returns false if the feature is disabled or base URL is not configured.
+     * Returns true only if the file was actually written (value changed).
+     * Returns false if the feature is disabled, URL is not configured, or value was already correct.
      */
     async updateFile(file: TFile): Promise<boolean> {
         if (!this.settings.enableWikiUrls || !this.settings.wikiBaseUrl) return false;
         const url = WikiUrlGenerator.computeUrl(this.settings.wikiBaseUrl, file.basename);
+
+        // Check metadata cache first — skip the write if the value is already correct
+        const cached = this.app.metadataCache.getFileCache(file);
+        if (cached?.frontmatter?.["wiki_url"] === url) return false;
+
         await this.app.fileManager.processFrontMatter(file, (fm) => {
             fm["wiki_url"] = url;
         });
@@ -47,8 +53,7 @@ export class WikiUrlGenerator {
         for (const file of this.app.vault.getMarkdownFiles()) {
             if (tocPaths.has(file.path)) continue;
             if (shouldIgnore(file.path, false, patterns)) continue;
-            await this.updateFile(file);
-            count++;
+            if (await this.updateFile(file)) count++;
         }
         return count;
     }

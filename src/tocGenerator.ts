@@ -21,13 +21,19 @@ export class TocGenerator {
         const maxHeadingLevel = parseHeadingDepth(this.settings.headingDepth);
         const ignoreFolderNotes = this.settings.ignoreFolderNotes;
 
-        let successCount = 0;
+        let updatedCount = 0;
+        let skippedCount = 0;
         for (const tocFilePath of tocFilePaths) {
-            const ok = await this.generateForFile(tocFilePath, basePatterns, maxHeadingLevel, ignoreFolderNotes);
-            if (ok) successCount++;
+            const result = await this.generateForFile(tocFilePath, basePatterns, maxHeadingLevel, ignoreFolderNotes);
+            if (result === "updated") updatedCount++;
+            else if (result === "skipped") skippedCount++;
         }
 
-        new Notice(`TOC Generator: updated ${successCount} of ${tocFilePaths.length} file(s).`);
+        if (updatedCount === 0) {
+            new Notice("TOC Generator: already up to date.");
+        } else {
+            new Notice(`TOC Generator: updated ${updatedCount} of ${tocFilePaths.length} file(s).`);
+        }
     }
 
     private async generateForFile(
@@ -35,7 +41,7 @@ export class TocGenerator {
         basePatterns: IgnorePattern[],
         maxHeadingLevel: number,
         ignoreFolderNotes: boolean
-    ): Promise<boolean> {
+    ): Promise<"updated" | "skipped" | "error"> {
         // Determine traversal root: the folder containing the TOC file
         const slashIdx = tocFilePath.lastIndexOf("/");
         const rootFolderPath = slashIdx > -1 ? tocFilePath.slice(0, slashIdx) : "";
@@ -47,7 +53,7 @@ export class TocGenerator {
             const node = this.app.vault.getAbstractFileByPath(rootFolderPath);
             if (!(node instanceof TFolder)) {
                 new Notice(`TOC Generator: Folder not found — "${rootFolderPath}"`);
-                return false;
+                return "error";
             }
             rootFolder = node;
         }
@@ -72,15 +78,17 @@ export class TocGenerator {
 
         const content = lines.join("\n") + "\n";
 
-        // Overwrite the TOC file entirely on every run
+        // Only write if the content has actually changed
         const existing = this.app.vault.getAbstractFileByPath(tocFilePath);
         if (existing instanceof TFile) {
+            const current = await this.app.vault.read(existing);
+            if (current === content) return "skipped";
             await this.app.vault.modify(existing, content);
         } else {
             await this.app.vault.create(tocFilePath, content);
         }
 
-        return true;
+        return "updated";
     }
 
     // ── Rendering ─────────────────────────────────────────────────────────────

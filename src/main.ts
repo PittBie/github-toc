@@ -17,7 +17,9 @@ export default class GithubWikiTocPlugin extends Plugin {
             if (this.settings.enableWikiUrls) {
                 const wiki = new WikiUrlGenerator(this.app, this.settings);
                 const count = await wiki.updateAll();
-                new Notice(`Wiki URL Generator: updated ${count} note(s).`);
+                if (count > 0) {
+                    new Notice(`Wiki URL Generator: updated ${count} note(s).`);
+                }
             }
         };
 
