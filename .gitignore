@@ -1,0 +1,9 @@
+node_modules/
+main.js
+*.js.map
+.idea/
+.vscode/
+.claude/
+data.json
+.DS_Store
+Thumbs.db
