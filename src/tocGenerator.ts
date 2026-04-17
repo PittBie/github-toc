@@ -13,26 +13,25 @@ export class TocGenerator {
             .filter((s) => s.length > 0);
 
         if (tocFilePaths.length === 0) {
-            new Notice("TOC Generator: No target files configured. Check plugin settings.");
+            new Notice("TOC generator: No target files configured. Check plugin settings.");
             return;
         }
 
-        const basePatterns = parseIgnorePatterns(this.settings.ignorePatterns);
+        const configDir = this.app.vault.configDir;
+        const basePatterns = parseIgnorePatterns(this.settings.ignorePatterns + "\n" + configDir);
         const maxHeadingLevel = parseHeadingDepth(this.settings.headingDepth);
         const ignoreFolderNotes = this.settings.ignoreFolderNotes;
 
         let updatedCount = 0;
-        let skippedCount = 0;
         for (const tocFilePath of tocFilePaths) {
             const result = await this.generateForFile(tocFilePath, basePatterns, maxHeadingLevel, ignoreFolderNotes);
             if (result === "updated") updatedCount++;
-            else if (result === "skipped") skippedCount++;
         }
 
         if (updatedCount === 0) {
-            new Notice("TOC Generator: already up to date.");
+            new Notice("TOC generator: already up to date.");
         } else {
-            new Notice(`TOC Generator: updated ${updatedCount} of ${tocFilePaths.length} file(s).`);
+            new Notice(`TOC generator: updated ${updatedCount} of ${tocFilePaths.length} file(s).`);
         }
     }
 

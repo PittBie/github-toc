@@ -1,2 +1,5 @@
 /* GitHub Wiki TOC Generator — plugin styles */
-/* No custom styles required at this time */
+
+.github-wiki-toc-textarea {
+    width: 100%;
+}

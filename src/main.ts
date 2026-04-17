@@ -18,18 +18,18 @@ export default class GithubWikiTocPlugin extends Plugin {
                 const wiki = new WikiUrlGenerator(this.app, this.settings);
                 const count = await wiki.updateAll();
                 if (count > 0) {
-                    new Notice(`Wiki URL Generator: updated ${count} note(s).`);
+                    new Notice(`Wiki URL generator: updated ${count} note(s).`);
                 }
             }
         };
 
         this.addCommand({
             id: "generate-toc",
-            name: "Generate Table of Contents",
+            name: "Generate table of contents",
             callback: runAll,
         });
 
-        this.addRibbonIcon("list-ordered", "Generate Wiki TOC", runAll);
+        this.addRibbonIcon("list-ordered", "Generate wiki TOC", runAll);
 
         // ── Auto-update on rename or new file ──────────────────────────────────
         const onFileChange = async (file: TAbstractFile) => {

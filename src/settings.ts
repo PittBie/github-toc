@@ -25,7 +25,7 @@ export interface TocPluginSettings {
 export const DEFAULT_SETTINGS: TocPluginSettings = {
     tocFiles: "_Sidebar.md",
     headingDepth: "",
-    ignorePatterns: "/images\n.obsidian",
+    ignorePatterns: "/images",
     ignoreFolderNotes: false,
     enableWikiUrls: false,
     wikiBaseUrl: "",
@@ -43,7 +43,7 @@ export class TocSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        containerEl.createEl("h2", { text: "GitHub Wiki TOC Generator" });
+        new Setting(containerEl).setName("GitHub Wiki TOC generator").setHeading();
 
         // ── TOC Generation ─────────────────────────────────────────────────────
         new Setting(containerEl)
@@ -55,7 +55,7 @@ export class TocSettingTab extends PluginSettingTab {
             )
             .addTextArea((text) => {
                 text.inputEl.rows = 4;
-                text.inputEl.style.width = "100%";
+                text.inputEl.addClass("github-wiki-toc-textarea");
                 text
                     .setPlaceholder("_Sidebar.md\ndocs/_Sidebar.md")
                     .setValue(this.plugin.settings.tocFiles)
@@ -106,7 +106,7 @@ export class TocSettingTab extends PluginSettingTab {
             )
             .addTextArea((text) => {
                 text.inputEl.rows = 6;
-                text.inputEl.style.width = "100%";
+                text.inputEl.addClass("github-wiki-toc-textarea");
                 text
                     .setPlaceholder("/images\n*.draft.md\nprivate/")
                     .setValue(this.plugin.settings.ignorePatterns)
@@ -117,10 +117,10 @@ export class TocSettingTab extends PluginSettingTab {
             });
 
         // ── GitHub Wiki URLs ───────────────────────────────────────────────────
-        containerEl.createEl("h3", { text: "GitHub Wiki URLs" });
+        new Setting(containerEl).setName("GitHub Wiki URLs").setHeading();
 
         new Setting(containerEl)
-            .setName("Enable Wiki URL injection")
+            .setName("Enable wiki URL injection")
             .setDesc(
                 "Write a wiki_url frontmatter property to each note with its GitHub Wiki page URL. " +
                 "URLs are updated automatically when a file is renamed or created, and on every TOC run."

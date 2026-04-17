@@ -37,11 +37,12 @@ export class WikiUrlGenerator {
      */
     async updateAll(): Promise<number> {
         if (!this.settings.wikiBaseUrl) {
-            new Notice("Wiki URL Generator: No base URL configured. Check plugin settings.");
+            new Notice("Wiki URL generator: No base URL configured. Check plugin settings.");
             return 0;
         }
 
-        const patterns = parseIgnorePatterns(this.settings.ignorePatterns);
+        const configDir = this.app.vault.configDir;
+        const patterns = parseIgnorePatterns(this.settings.ignorePatterns + "\n" + configDir);
         const tocPaths = new Set(
             this.settings.tocFiles
                 .split("\n")
