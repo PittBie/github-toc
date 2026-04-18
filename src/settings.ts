@@ -43,11 +43,11 @@ export class TocSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        new Setting(containerEl).setName("GitHub Wiki TOC generator").setHeading();
+        new Setting(containerEl).setName("Table of contents").setHeading();
 
         // ── TOC Generation ─────────────────────────────────────────────────────
         new Setting(containerEl)
-            .setName("TOC target files")
+            .setName("Target files")
             .setDesc(
                 "Vault-relative paths to the files where the TOC should be written, one per line. " +
                 "If a target is inside a subfolder (e.g. docs/_Sidebar.md), only that subfolder " +
@@ -73,7 +73,7 @@ export class TocSettingTab extends PluginSettingTab {
             )
             .addText((text) =>
                 text
-                    .setPlaceholder("e.g. ##")
+                    .setPlaceholder("##")
                     .setValue(this.plugin.settings.headingDepth)
                     .onChange(async (value) => {
                         this.plugin.settings.headingDepth = value.trim();
@@ -117,7 +117,7 @@ export class TocSettingTab extends PluginSettingTab {
             });
 
         // ── GitHub Wiki URLs ───────────────────────────────────────────────────
-        new Setting(containerEl).setName("GitHub Wiki URLs").setHeading();
+        new Setting(containerEl).setName("GitHub wiki URLs").setHeading();
 
         new Setting(containerEl)
             .setName("Enable wiki URL injection")

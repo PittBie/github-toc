@@ -13,7 +13,7 @@ export class TocGenerator {
             .filter((s) => s.length > 0);
 
         if (tocFilePaths.length === 0) {
-            new Notice("TOC generator: No target files configured. Check plugin settings.");
+            new Notice("Table of contents: no target files configured. Check plugin settings.");
             return;
         }
 
@@ -29,9 +29,9 @@ export class TocGenerator {
         }
 
         if (updatedCount === 0) {
-            new Notice("TOC generator: already up to date.");
+            new Notice("Table of contents: already up to date.");
         } else {
-            new Notice(`TOC generator: updated ${updatedCount} of ${tocFilePaths.length} file(s).`);
+            new Notice(`Table of contents: updated ${updatedCount} of ${tocFilePaths.length} file(s).`);
         }
     }
 
@@ -51,7 +51,7 @@ export class TocGenerator {
         } else {
             const node = this.app.vault.getAbstractFileByPath(rootFolderPath);
             if (!(node instanceof TFolder)) {
-                new Notice(`TOC Generator: Folder not found — "${rootFolderPath}"`);
+                new Notice(`Table of contents: folder not found — "${rootFolderPath}"`);
                 return "error";
             }
             rootFolder = node;

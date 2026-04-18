@@ -29,7 +29,7 @@ export default class GithubWikiTocPlugin extends Plugin {
             callback: runAll,
         });
 
-        this.addRibbonIcon("list-ordered", "Generate wiki TOC", runAll);
+        this.addRibbonIcon("list-ordered", "Generate wiki table of contents", runAll);
 
         // ── Auto-update on rename or new file ──────────────────────────────────
         const onFileChange = async (file: TAbstractFile) => {

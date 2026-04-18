@@ -37,7 +37,7 @@ export class WikiUrlGenerator {
      */
     async updateAll(): Promise<number> {
         if (!this.settings.wikiBaseUrl) {
-            new Notice("Wiki URL generator: No base URL configured. Check plugin settings.");
+            new Notice("Wiki URL generator: no base URL configured. Check plugin settings.");
             return 0;
         }
 
