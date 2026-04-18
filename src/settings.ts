@@ -117,7 +117,7 @@ export class TocSettingTab extends PluginSettingTab {
             });
 
         // ── GitHub Wiki URLs ───────────────────────────────────────────────────
-        new Setting(containerEl).setName("GitHub wiki URLs").setHeading();
+        new Setting(containerEl).setName("GitHub wiki URL").setHeading();
 
         new Setting(containerEl)
             .setName("Enable wiki URL injection")
